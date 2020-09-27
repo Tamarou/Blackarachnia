@@ -1,12 +1,20 @@
-package main
+/*
+TODO: port https://metacpan.org/source/DROLSKY/Web-Machine-0.17/t/010-resource-tests.t to this test
+*/
+
+package blackarachnia_test
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/Tamarou/blackarachnia/fsm"
+	"github.com/Tamarou/blackarachnia"
+	"github.com/Tamarou/blackarachnia/handlerMap"
+	types "github.com/Tamarou/blackarachnia/types"
+	"github.com/stretchr/testify/assert"
 )
 
 type TestResource struct {
@@ -18,11 +26,10 @@ type TestResource struct {
 	forbidden             bool
 	invalidContentHeaders bool
 	unknownContentType    bool
-	Resource
+	blackarachnia.Resource
 }
 
 func (sr TestResource) KnownContentType(c string) bool           { return !sr.unknownContentType }
-func (sr TestResource) Body() []byte                             { return []byte("Hello World!\n") }
 func (sr TestResource) ServiceAvailable() bool                   { return !sr.disabled }
 func (sr TestResource) KnownMethods() []string                   { return sr.methods }
 func (sr TestResource) AllowedMethods() []string                 { return sr.allowedMethods }
@@ -31,13 +38,15 @@ func (sr TestResource) Authorized(auth string) bool              { return !sr.un
 func (sr TestResource) Forbidden() bool                          { return sr.forbidden }
 func (sr TestResource) ValidContentHeaders(r *http.Request) bool { return !sr.invalidContentHeaders }
 func (sr TestResource) LastModified() time.Time                  { return time.Now() }
+func (sr TestResource) ContentTypesProvided() types.HandlerMap {
+	return handlerMap.NewHandlerMap(
+		handlerMap.Map("text/plain", sr.ToText),
+	)
+}
 
-func (sr TestResource) GetAcceptableContentTypeHandler(r *http.Request) fsm.ContentHandler {
-	return func(w http.ResponseWriter, r *http.Request) bool {
-		w.WriteHeader(http.StatusOK)
-		w.Write(sr.Body())
-		return true
-	}
+func (sr TestResource) ToText(w http.ResponseWriter, r *http.Request) error {
+	io.WriteString(w, "Hello World")
+	return nil
 }
 
 func TestHandlers(t *testing.T) {
@@ -47,7 +56,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("Service Unavailble", func(t *testing.T) {
 		rr := httptest.NewRecorder()
 		r := TestResource{disabled: true}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		got := rr.Code
@@ -61,7 +70,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("Service Available", func(t *testing.T) {
 		rr := httptest.NewRecorder()
 		r := TestResource{}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		got := rr.Code
@@ -75,7 +84,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("Unknown Method", func(t *testing.T) {
 		rr := httptest.NewRecorder()
 		r := TestResource{}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		got := rr.Code
@@ -90,7 +99,7 @@ func TestHandlers(t *testing.T) {
 		r := TestResource{
 			methods: []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		got := rr.Code
@@ -106,7 +115,7 @@ func TestHandlers(t *testing.T) {
 			methods:        []string{"GET", "HEAD"},
 			allowedMethods: []string{"HEAD"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		got := rr.Code
@@ -126,7 +135,7 @@ func TestHandlers(t *testing.T) {
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		if code := rr.Code; code != http.StatusBadRequest {
@@ -141,7 +150,7 @@ func TestHandlers(t *testing.T) {
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		if code := rr.Code; code != http.StatusUnauthorized {
@@ -156,7 +165,7 @@ func TestHandlers(t *testing.T) {
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		if code := rr.Code; code != http.StatusForbidden {
@@ -171,7 +180,7 @@ func TestHandlers(t *testing.T) {
 			methods:               []string{"GET"},
 			allowedMethods:        []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
 		if code := rr.Code; code != http.StatusNotImplemented {
@@ -186,12 +195,11 @@ func TestHandlers(t *testing.T) {
 			methods:            []string{"GET"},
 			allowedMethods:     []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
-		if code := rr.Code; code != http.StatusUnsupportedMediaType {
-			t.Errorf("got %d wanted %d", code, http.StatusUnsupportedMediaType)
-		}
+		assert.Equal(t, http.StatusUnsupportedMediaType, rr.Code)
+		assert.Equal(t, "Unsupported Media Type\n", rr.Body.String())
 	})
 
 	t.Run("200 OK", func(t *testing.T) {
@@ -201,18 +209,10 @@ func TestHandlers(t *testing.T) {
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
 		}
-		handler := http.HandlerFunc(NewHandler(r))
+		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
-		got := rr.Body.String()
-		want := "Hello World!\n"
-
-		if code := rr.Code; code != http.StatusOK {
-			t.Errorf("got %v wanted %v", code, http.StatusOK)
-		}
-
-		if got != want {
-			t.Errorf("got %q wanted %q", got, want)
-		}
+		assert.Equal(t, http.StatusOK, rr.Code, "got 200")
+		assert.Equal(t, "Hello World", rr.Body.String())
 	})
 }
