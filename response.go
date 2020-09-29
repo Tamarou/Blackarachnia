@@ -10,7 +10,7 @@ type Response struct {
 }
 
 func (r *Response) Write(b []byte) (int, error) {
-	r.body = string(b)
+	r.body = r.body + string(b)
 	return len(b), nil
 }
 

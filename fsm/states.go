@@ -1,7 +1,6 @@
 package fsm
 
 import (
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -31,7 +30,6 @@ func chooseEncoding(accept string, choices []string) string {
 }
 
 func matchAcceptableMediaType(contentType string, handlers types.HandlerMap) types.Handler {
-	log.Println(contentType)
 	return handlers.Get(contentType)
 }
 
@@ -134,9 +132,8 @@ func b11(res types.Resource, w types.Response, r *http.Request) (next State) {
 
 // method allowed
 func b10(res types.Resource, w types.Response, r *http.Request) (next State) {
-	// TODO verify this
 	if methodInList(r.Method, res.AllowedMethods()) {
-		next = b9
+		return b9
 	} else {
 		allow := strings.Join(res.AllowedMethods(), ",")
 		w.Header().Set("Allow", allow)
@@ -662,7 +659,7 @@ func n11(res types.Resource, w types.Response, r *http.Request) (next State) {
 			w.Header().Set("Location", URL)
 		}
 	} else {
-		if body := res.ProcessPost(); body == "" {
+		if e := res.ProcessPost(w, r); e != nil {
 			panic("Process Post Invalid")
 		}
 	}

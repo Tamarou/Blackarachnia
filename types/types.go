@@ -65,7 +65,7 @@ type Resource interface {
 	AllowMissingPost() bool
 	PostIsCreate() bool
 	CreatePath() string
-	ProcessPost() string
+	ProcessPost(w http.ResponseWriter, r *http.Request) error
 	IsConflict() bool
 	Options(http.ResponseWriter)
 	DeleteResource() bool
