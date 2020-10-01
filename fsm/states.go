@@ -296,7 +296,7 @@ func e6(res types.Resource, w types.Response, r *http.Request) (next State) {
 		}
 	}
 	next = f6
-	// reset the Content-Type with the charset here
+	w.SetCharset(charset)
 	return
 }
 
@@ -666,8 +666,6 @@ func n11(res types.Resource, w types.Response, r *http.Request) (next State) {
 	if w.Header().Get("Location") != "" {
 		http.Error(w, "See Other", http.StatusSeeOther)
 		return
-	} else {
-		panic("Bad Redirect")
 	}
 
 	next = p11
@@ -691,8 +689,12 @@ func o14(res types.Resource, w types.Response, r *http.Request) (next State) {
 		return
 	}
 
-	if handler := getAcceptableContentTypeHandler(res, r); handler != nil {
-		_ = handler.ServeHTTP(w, r)
+	handler := getAcceptableContentTypeHandler(res, r)
+	if handler == nil {
+		http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
+		return
+	}
+	if e := handler.ServeHTTP(w, r); e != nil {
 		return
 	}
 	return p11

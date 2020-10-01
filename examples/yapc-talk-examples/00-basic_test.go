@@ -1,62 +1,3 @@
-/*
-#!/usr/bin/perl
-
-use strict;
-use warnings;
-use FindBin;
-
-use Test::More;
-use Test::Fatal;
-
-use Plack::Test;
-use Plack::Util;
-
-use HTTP::Request::Common;
-
-BEGIN {
-    if (!eval { require JSON::XS; 1 }) {
-        plan skip_all => "JSON::XS is required for this test";
-    }
-    if (!eval { require Path::Class; Path::Class->import; 1 }) {
-        plan skip_all => "Path::Class is required for this test";
-    }
-}
-
-my $dir = file(__FILE__)->parent->parent->parent->subdir('examples')->subdir('yapc-talk-examples');
-
-test_psgi
-    Plack::Util::load_psgi( $dir->file('001-basic.psgi')->stringify ),
-    sub {
-        my $cb  = shift;
-
-        {
-            my $res = $cb->(GET "/");
-            is($res->code, 200, '... got the expected status');
-            is($res->header('Content-Type'), 'application/json', '... got the expected Content-Type header');
-            is($res->header('Content-Length'), 25, '... got the expected Content-Length header');
-            is(
-                $res->content,
-                '{"message":"Hello World"}',
-                '... got the expected content'
-            );
-        }
-
-        {
-            my $res = $cb->(GET "/" => ('Accept' => 'text/html'));
-            is($res->code, 200, '... got the expected status');
-            is($res->header('Content-Type'), 'text/html', '... got the expected Content-Type header');
-            is($res->header('Content-Length'), 46, '... got the expected Content-Length header');
-            is(
-                $res->content,
-                '<html><body><h1>Hello World</h1></body></html>',
-                '... got the expected content'
-            );
-        }
-    };
-
-done_testing;
-
-*/
 package main
 
 import (
@@ -69,16 +10,42 @@ import (
 )
 
 func Test00Basic(t *testing.T) {
+	/*
+		   {
+		       my $res = $cb->(GET "/");
+		       is($res->code, 200, '... got the expected status');
+		       is($res->header('Content-Type'), 'application/json', '... got the expected Content-Type header');
+		       is($res->header('Content-Length'), 25, '... got the expected Content-Length header');
+		       is(
+					$res->content,
+					'{"message":"Hello World"}',
+					'... got the expected content'
+		       );
+		   }
+	*/
 	t.Run("default", func(t *testing.T) {
 		res := httptest.NewRecorder()
 		r, _ := http.NewRequest(http.MethodGet, "/", nil)
-		handler := blackarachnia.NewHandler(YAPC_NA_2012_Example000_Resource{})
+		handler := blackarachnia.NewHandler(&YAPC_NA_2012_Example000_Resource{})
 		handler.ServeHTTP(res, r)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
+	/*
+	   {
+	       my $res = $cb->(GET "/" => ('Accept' => 'text/html'));
+	       is($res->code, 200, '... got the expected status');
+	       is($res->header('Content-Type'), 'text/html', '... got the expected Content-Type header');
+	       is($res->header('Content-Length'), 46, '... got the expected Content-Length header');
+	       is(
+	           $res->content,
+	           '<html><body><h1>Hello World</h1></body></html>',
+	           '... got the expected content'
+	       );
+	   }
+	*/
 	t.Run("Accept 'text/html'", func(t *testing.T) {
-
+		// TODO implement content negotiation
 	})
 }

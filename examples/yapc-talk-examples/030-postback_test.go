@@ -12,25 +12,25 @@ import (
 )
 
 func Test030_Resource(t *testing.T) {
+
+	resource := New_YAPC_NA_2012_Example030_Resource()
+	handler := blackarachnia.NewHandler(resource)
 	/*
 		{
-		            my $res = $cb->(GET "/");
-		            is($res->code, 200, '... got the expected status');
-		            is($res->header('Content-Type'), 'text/html', '... got the expected Content-Type header');
-		            is($res->header('Content-Length'), 126, '... got the expected Content-Length header');
-		            is(
-		                $res->content,
-		                '<html><body><form method="POST"><input type="text" name="message" /><input type="submit" /></form><hr/><ul></ul></body></html>',
-		                '... got the expected content'
-		            );
-		        }
+		     my $res = $cb->(GET "/");
+		     is($res->code, 200, '... got the expected status');
+		     is($res->header('Content-Type'), 'text/html', '... got the expected Content-Type header');
+		     is($res->header('Content-Length'), 126, '... got the expected Content-Length header');
+		     is(
+				$res->content,
+				'<html><body><form method="POST"><input type="text" name="message" /><input type="submit" /></form><hr/><ul></ul></body></html>',
+				'... got the expected content'
+		     );
+		}
 	*/
-	resource := YAPC_NA_2012_Example030_Resource{}
-
 	t.Run("GET /", func(t *testing.T) {
 		res := httptest.NewRecorder()
 		r, _ := http.NewRequest(http.MethodGet, "http://example.com/", nil)
-		handler := blackarachnia.NewHandler(resource)
 		handler.ServeHTTP(res, r)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -39,10 +39,10 @@ func Test030_Resource(t *testing.T) {
 	})
 	/*
 	   {
-	               my $res = $cb->(POST "/", [ message => 'foo' ]);
-	               is($res->code, 301, '... got the expected status');
-	               is($res->header('Location'), '/', '... got the right Location header');
-	           }
+	       my $res = $cb->(POST "/", [ message => 'foo' ]);
+	       is($res->code, 301, '... got the expected status');
+	       is($res->header('Location'), '/', '... got the right Location header');
+	   }
 
 	*/
 
@@ -52,7 +52,6 @@ func Test030_Resource(t *testing.T) {
 		r, _ := http.NewRequest(http.MethodPost, "http://example.com/", strings.NewReader(form.Encode()))
 		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-		handler := blackarachnia.NewHandler(resource)
 		handler.ServeHTTP(res, r)
 
 		assert.Equal(t, http.StatusMovedPermanently, res.Code)
@@ -77,7 +76,6 @@ func Test030_Resource(t *testing.T) {
 	t.Run("GET /", func(t *testing.T) {
 		res := httptest.NewRecorder()
 		r, _ := http.NewRequest(http.MethodGet, "http://example.com/", nil)
-		handler := blackarachnia.NewHandler(resource)
 		handler.ServeHTTP(res, r)
 
 		assert.Equal(t, http.StatusOK, res.Code)

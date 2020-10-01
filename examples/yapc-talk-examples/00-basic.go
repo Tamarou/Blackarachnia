@@ -23,7 +23,7 @@ import (
 )
 
 type message struct {
-	message string `message`
+	Message string `json:"message"`
 }
 
 type YAPC_NA_2012_Example000_Resource struct{ blackarachnia.Resource }

@@ -78,7 +78,7 @@ func TestBasicResource(t *testing.T) {
 
 	for _, test := range tests {
 		r := httptest.NewRecorder()
-		handler := blackarachnia.NewHandler(MyResource{})
+		handler := blackarachnia.NewHandler(&MyResource{})
 		handler.ServeHTTP(r, test)
 
 		assert.Equal(t, http.StatusOK, r.Code)

@@ -38,7 +38,7 @@ func (mr MyResource) ToHTML(w http.ResponseWriter, r *http.Request) error {
 }
 
 func main() {
-	resource := MyResource{}
+	resource := &MyResource{}
 	handler := blackarachnia.NewHandler(resource)
 	log.Fatal(http.ListenAndServe(":8080", handler))
 }

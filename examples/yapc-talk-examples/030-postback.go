@@ -42,32 +42,38 @@ import (
 	"github.com/Tamarou/blackarachnia/types"
 )
 
-var messages = []string{}
-
 type YAPC_NA_2012_Example030_Resource struct {
+	messages []string
 	blackarachnia.Resource
 }
 
-func (res YAPC_NA_2012_Example030_Resource) AllowedMethods() []string {
+func New_YAPC_NA_2012_Example030_Resource() *YAPC_NA_2012_Example030_Resource {
+	return &YAPC_NA_2012_Example030_Resource{
+		[]string{},
+		blackarachnia.Resource{},
+	}
+}
+
+func (res *YAPC_NA_2012_Example030_Resource) AllowedMethods() []string {
 	return []string{"GET", "POST"}
 }
 
-func (res YAPC_NA_2012_Example030_Resource) ContentTypesProvided() types.HandlerMap {
+func (res *YAPC_NA_2012_Example030_Resource) ContentTypesProvided() types.HandlerMap {
 	return handlerMap.NewHandlerMap(handlerMap.Map("text/html", res.toHTML))
 }
 
-func (res YAPC_NA_2012_Example030_Resource) toHTML(w http.ResponseWriter, r *http.Request) error {
+func (res *YAPC_NA_2012_Example030_Resource) toHTML(w http.ResponseWriter, r *http.Request) error {
 	const tpl = `<html><body><form method="POST"><input type="text" name="message" /><input type="submit" /></form><hr/><ul>{{- range . -}}<li>{{- . -}}</li>{{- end -}}</ul></body></html>`
 	t, e := template.New("webpage").Parse(tpl)
 	if e != nil {
 		return e
 	}
 
-	return t.Execute(w, messages)
+	return t.Execute(w, res.messages)
 }
 
-func (res YAPC_NA_2012_Example030_Resource) ProcessPost(w http.ResponseWriter, r *http.Request) error {
-	messages = append(messages, r.FormValue("message"))
+func (res *YAPC_NA_2012_Example030_Resource) ProcessPost(w http.ResponseWriter, r *http.Request) error {
+	res.messages = append(res.messages, r.FormValue("message"))
 	w.Header().Set("Location", "/")
 	http.Error(w, "See Other", http.StatusMovedPermanently) // this shoudl be a 303 but the original has 301
 	return nil

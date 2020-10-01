@@ -55,7 +55,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Service Unavailble", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{disabled: true}
+		r := &TestResource{disabled: true}
 		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
@@ -69,7 +69,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Service Available", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{}
+		r := &TestResource{}
 		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
@@ -83,7 +83,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Unknown Method", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{}
+		r := &TestResource{}
 		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
 		handler.ServeHTTP(rr, request)
 
@@ -96,7 +96,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Known Method", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			methods: []string{"GET"},
 		}
 		handler := http.HandlerFunc(blackarachnia.NewHandler(r))
@@ -111,7 +111,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Allowed Method", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			methods:        []string{"GET", "HEAD"},
 			allowedMethods: []string{"HEAD"},
 		}
@@ -130,7 +130,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Malformed Request", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			malformed:      true,
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
@@ -145,7 +145,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Unauthorized", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			unauthorized:   true,
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
@@ -160,7 +160,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Forbidden", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			forbidden:      true,
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
@@ -175,7 +175,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Valid Content Headers", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			invalidContentHeaders: true,
 			methods:               []string{"GET"},
 			allowedMethods:        []string{"GET"},
@@ -190,7 +190,7 @@ func TestHandlers(t *testing.T) {
 
 	t.Run("Unknown Content Type", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		r := TestResource{
+		r := &TestResource{
 			unknownContentType: true,
 			methods:            []string{"GET"},
 			allowedMethods:     []string{"GET"},
@@ -205,7 +205,7 @@ func TestHandlers(t *testing.T) {
 	t.Run("200 OK", func(t *testing.T) {
 		rr := httptest.NewRecorder()
 
-		r := TestResource{
+		r := &TestResource{
 			methods:        []string{"GET"},
 			allowedMethods: []string{"GET"},
 		}

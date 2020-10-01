@@ -8,6 +8,7 @@ import (
 
 type Response interface {
 	Body() string
+	SetCharset(string)
 	http.ResponseWriter
 }
 
