@@ -1,14 +1,34 @@
 /*
-   package YAPC::NA::2012::Example000::Resource;
-   use strict;
-   use warnings;
-   use JSON::XS qw[ encode_json ];
+#!perl
 
-   use parent 'Web::Machine::Resource';
+use strict;
+use warnings;
 
-   sub content_types_provided { [{ 'application/json' => 'to_json' }] }
+use Web::Machine;
 
-   sub to_json { encode_json( { message => 'Hello World' } ) }
+=pod
+
+curl -v http://0:5000/
+
+# fails with a 406
+curl -v http://0:5000/ -H 'Accept: image/jpeg'
+
+=cut
+
+{
+    package YAPC::NA::2012::Example000::Resource;
+    use strict;
+    use warnings;
+    use JSON::XS qw[ encode_json ];
+
+    use parent 'Web::Machine::Resource';
+
+    sub content_types_provided { [{ 'application/json' => 'to_json' }] }
+
+    sub to_json { encode_json( { message => 'Hello World' } ) }
+}
+
+Web::Machine->new( resource => 'YAPC::NA::2012::Example000::Resource' )->to_app;
 */
 
 package main
@@ -22,10 +42,6 @@ import (
 	"github.com/Tamarou/blackarachnia/types"
 )
 
-type message struct {
-	Message string `json:"message"`
-}
-
 type YAPC_NA_2012_Example000_Resource struct{ blackarachnia.Resource }
 
 func (res YAPC_NA_2012_Example000_Resource) ContentTypesProvided() types.HandlerMap {
@@ -36,6 +52,8 @@ func (res YAPC_NA_2012_Example000_Resource) ContentTypesProvided() types.Handler
 
 func toJSON(w http.ResponseWriter, r *http.Request) error {
 	enc := json.NewEncoder(w)
-	enc.Encode(message{"Hello World"})
+	enc.Encode(struct {
+		Message string `json:"message"`
+	}{"Hello World"})
 	return nil
 }

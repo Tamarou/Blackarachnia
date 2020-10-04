@@ -5,13 +5,14 @@ import (
 	"strings"
 	"time"
 
-	types "github.com/Tamarou/blackarachnia/types"
+	"github.com/Tamarou/blackarachnia/types"
+	"github.com/adjust/goautoneg"
 )
 
 type State func(res types.Resource, w types.Response, r *http.Request) (next State)
 
 func chooseMediaType(accept string, choices []string) string {
-	return choices[0]
+	return goautoneg.Negotiate(accept, choices)
 }
 
 func chooseLanguage(accept string, choices []string) string {
