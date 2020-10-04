@@ -3,10 +3,9 @@ module github.com/Tamarou/blackarachnia
 go 1.14
 
 require (
-	github.com/golang/gddo v0.0.0-20200831202555-721e228c7686
-	github.com/google/go-cmp v0.1.1-0.20171103154506-982329095285
-	github.com/gorilla/mux v1.8.0
+	github.com/adjust/goautoneg v0.0.0-20150426214442-d788f35a0315
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/kr/pretty v0.2.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/tools v0.0.0-20201001104356-43ebab892c4c // indirect
-	honnef.co/go/tools v0.0.1-2020.1.5 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
