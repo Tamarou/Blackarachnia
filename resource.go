@@ -12,17 +12,17 @@ type ContentHandler func(w Response, r *http.Request) bool
 
 type Resource struct{}
 
-func (r *Resource) Exists() bool                               { return true }
-func (r *Resource) ServiceAvailable() bool                     { return true }
-func (r *Resource) Authorized(auth string) bool                { return true }
-func (r *Resource) Forbidden() bool                            { return false }
-func (r *Resource) AllowMissingPost() bool                     { return false }
-func (r *Resource) MalformedRequest(req *http.Request) bool    { return false }
-func (r *Resource) URLTooLong(u *url.URL) bool                 { return false }
-func (r *Resource) KnownContentType(c string) bool             { return true }
-func (r *Resource) ValidContentHeaders(req *http.Request) bool { return true }
-func (r *Resource) ValidEntityLength(length string) bool       { return true }
-func (r *Resource) Options(w http.ResponseWriter)              {}
+func (r *Resource) Exists() bool                                       { return true }
+func (r *Resource) ServiceAvailable() bool                             { return true }
+func (r *Resource) Authorized(w http.ResponseWriter, auth string) bool { return true }
+func (r *Resource) Forbidden() bool                                    { return false }
+func (r *Resource) AllowMissingPost() bool                             { return false }
+func (r *Resource) MalformedRequest(req *http.Request) bool            { return false }
+func (r *Resource) URLTooLong(u *url.URL) bool                         { return false }
+func (r *Resource) KnownContentType(c string) bool                     { return true }
+func (r *Resource) ValidContentHeaders(req *http.Request) bool         { return true }
+func (r *Resource) ValidEntityLength(length string) bool               { return true }
+func (r *Resource) Options(w http.ResponseWriter)                      {}
 
 func (r *Resource) KnownMethods() []string {
 	return []string{

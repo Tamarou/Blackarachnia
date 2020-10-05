@@ -29,7 +29,6 @@ package main
 import (
 	"encoding/json"
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/Tamarou/blackarachnia"
@@ -60,7 +59,6 @@ func (res *YAPC_NA_2012_Example031_Resource) ContentTypesAccepted() types.Handle
 func (res *YAPC_NA_2012_Example031_Resource) fromJSON(w http.ResponseWriter, r *http.Request) error {
 	var m string
 	if e := json.NewDecoder(r.Body).Decode(&m); e != nil {
-		log.Fatal(e)
 		return e
 	}
 	res.messages = append(res.messages, m)

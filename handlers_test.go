@@ -29,15 +29,15 @@ type TestResource struct {
 	blackarachnia.Resource
 }
 
-func (sr TestResource) KnownContentType(c string) bool           { return !sr.unknownContentType }
-func (sr TestResource) ServiceAvailable() bool                   { return !sr.disabled }
-func (sr TestResource) KnownMethods() []string                   { return sr.methods }
-func (sr TestResource) AllowedMethods() []string                 { return sr.allowedMethods }
-func (sr TestResource) MalformedRequest(r *http.Request) bool    { return sr.malformed }
-func (sr TestResource) Authorized(auth string) bool              { return !sr.unauthorized }
-func (sr TestResource) Forbidden() bool                          { return sr.forbidden }
-func (sr TestResource) ValidContentHeaders(r *http.Request) bool { return !sr.invalidContentHeaders }
-func (sr TestResource) LastModified() time.Time                  { return time.Now() }
+func (sr TestResource) KnownContentType(c string) bool                     { return !sr.unknownContentType }
+func (sr TestResource) ServiceAvailable() bool                             { return !sr.disabled }
+func (sr TestResource) KnownMethods() []string                             { return sr.methods }
+func (sr TestResource) AllowedMethods() []string                           { return sr.allowedMethods }
+func (sr TestResource) MalformedRequest(r *http.Request) bool              { return sr.malformed }
+func (sr TestResource) Authorized(w http.ResponseWriter, auth string) bool { return !sr.unauthorized }
+func (sr TestResource) Forbidden() bool                                    { return sr.forbidden }
+func (sr TestResource) ValidContentHeaders(r *http.Request) bool           { return !sr.invalidContentHeaders }
+func (sr TestResource) LastModified() time.Time                            { return time.Now() }
 func (sr TestResource) ContentTypesProvided() types.HandlerMap {
 	return handlerMap.NewHandlerMap(
 		handlerMap.Map("text/plain", sr.ToText),
