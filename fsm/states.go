@@ -155,7 +155,7 @@ func b9(res types.Resource, w types.Response, r *http.Request) (next State) {
 
 // is authorized
 func b8(res types.Resource, w types.Response, r *http.Request) (next State) {
-	if res.Authorized(r.Header.Get("Authorization")) {
+	if res.Authorized(w, r.Header.Get("Authorization")) {
 		next = b7
 	} else {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)

@@ -39,7 +39,7 @@ func (e EmptyHandlerMap) FirstType() string { return "" }
 func (e EmptyHandlerMap) Types() []string   { return []string{} }
 
 type Resource interface {
-	Authorized(auth string) bool
+	Authorized(w http.ResponseWriter, auth string) bool
 	Forbidden() bool
 	KnownContentType(contentType string) bool
 	MalformedRequest(r *http.Request) bool
